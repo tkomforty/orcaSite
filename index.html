@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orcas Audio - Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080C18; /* Dark blue, slightly different from image bg for depth */
+            color: #E0E0E0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden; /* Prevents scrollbars from particle canvas */
+            position: relative; /* For stacking canvas and content */
+        }
+
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind content */
+        }
+
+        .content-wrapper {
+            position: relative; /* To sit on top of the canvas */
+            z-index: 1;
+            padding: 30px 40px;
+            background-color: rgba(10, 20, 40, 0.6); /* Dark semi-transparent background */
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 90%;
+            width: 500px; /* Max width for content */
+        }
+
+        #logo {
+            max-width: 80%; /* Responsive logo size */
+            height: auto;
+            margin-bottom: 25px;
+            border-radius: 10px; /* Soften edges if image isn't already rounded */
+            /* The image itself has good styling, so minimal extra styling needed */
+        }
+
+        h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(79, 209, 197, 0.5), 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+
+        p {
+            font-size: 1.1em;
+            font-weight: 300;
+            color: #B0C4DE; /* Light steel blue for paragraph */
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            font-weight: 400;
+            color: #79E0EE; /* Teal accent for company name */
+            margin-top: 10px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .content-wrapper {
+                padding: 20px 25px;
+                width: 90%;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            p {
+                font-size: 1em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    <div class="content-wrapper">
+        <!-- 
+          The image src now points to a local file "orcaLogo.png".
+          Ensure this file exists in the same directory as your index.html
+          or adjust the path accordingly.
+        -->
+        <img src="orcaLogo.png" alt="Orcas Audio Logo" id="logo"
+        onerror="this.onerror=null; this.src='https://placehold.co/300x200/0A1428/FFFFFF?text=Orcas+Audio+Logo+Not+Found'; this.alt='Orcas Audio Logo Not Found';">
+        
+        <h1>Coming Soon</h1>
+        <p>We're tuning up something amazing for you. Stay tuned for the official launch of Orcas Audio!</p>
+        <h2>Orcas Audio</h2>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particlesArray;
+
+        // Set canvas dimensions
+        function setCanvasDimensions() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        setCanvasDimensions();
+
+        // Particle class
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+                this.opacity = Math.random() * 0.5 + 0.3; // Random initial opacity for twinkling
+                this.opacitySpeed = (Math.random() - 0.5) * 0.02; // Speed of opacity change
+            }
+
+            // Method to draw individual particle
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = `rgba(${hexToRgb(this.color).r}, ${hexToRgb(this.color).g}, ${hexToRgb(this.color).b}, ${this.opacity})`;
+                ctx.fill();
+            }
+
+            // Method to update particle position and handle screen edges
+            update() {
+                // Check boundaries
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.directionY = -this.directionY;
+                }
+
+                // Move particle
+                this.x += this.directionX;
+                this.y += this.directionY;
+
+                // Update opacity for twinkling effect
+                this.opacity += this.opacitySpeed;
+                if (this.opacity <= 0.1 || this.opacity >= 0.8) {
+                    this.opacitySpeed = -this.opacitySpeed; // Reverse opacity change direction
+                    this.opacity = Math.max(0.1, Math.min(0.8, this.opacity)); // Clamp opacity
+                }
+
+                this.draw();
+            }
+        }
+
+        // Helper function to convert hex color to RGB object
+        function hexToRgb(hex) {
+            let r = 0, g = 0, b = 0;
+            // 3 digits
+            if (hex.length == 4) {
+                r = "0x" + hex[1] + hex[1];
+                g = "0x" + hex[2] + hex[2];
+                b = "0x" + hex[3] + hex[3];
+            // 6 digits
+            } else if (hex.length == 7) {
+                r = "0x" + hex[1] + hex[2];
+                g = "0x" + hex[3] + hex[4];
+                b = "0x" + hex[5] + hex[6];
+            }
+            return {r: +r, g: +g, b: +b};
+        }
+
+
+        // Create particle array
+        function init() {
+            particlesArray = [];
+            // Colors inspired by the provided image (pinks, blues, whites)
+            const colors = ['#FF6B6B', '#FF8787', '#4FD1C5', '#79E0EE', '#FFFFFF', '#B0C4DE', '#FAD0C4'];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000; // Adjust density based on screen size
+            numberOfParticles = Math.min(numberOfParticles, 150); // Max 150 particles
+
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = Math.random() * 2.5 + 0.5; // Particle size: 0.5px to 3px
+                let x = Math.random() * (innerWidth - size * 2) + size;
+                let y = Math.random() * (innerHeight - size * 2) + size;
+                // Slower particle movement
+                let directionX = (Math.random() * 0.4) - 0.2; // -0.2 to 0.2
+                let directionY = (Math.random() * 0.4) - 0.2; // -0.2 to 0.2
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        // Resize event listener
+        window.addEventListener('resize', () => {
+            setCanvasDimensions();
+            init(); // Re-initialize particles on resize for responsiveness
+        });
+
+        // Initial setup
+        init();
+        animate();
+        
+        // Fallback for logo if it fails to load
+        const logoImage = document.getElementById('logo');
+        if (logoImage) {
+            logoImage.onerror = function() {
+                this.onerror = null; // prevent infinite loop if placeholder also fails
+                this.src = 'https://placehold.co/300x200/0A1428/FFFFFF?text=Orcas+Audio+Logo';
+                this.alt = 'Orcas Audio Logo - Image Not Found';
+                console.warn("Original logo image failed to load. Displaying placeholder.");
+            };
+        }
+
+    </script>
+</body>
+</html>
