@@ -71,8 +71,7 @@
             -webkit-backdrop-filter: blur(8px); /* Safari support for backdrop-filter */
             border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
             max-width: 90%; /* Ensure it doesn't get too wide on large screens */
-            width: -moz-fit-content; /* Firefox */
-            width: fit-content; 
+            width: 380px; /* UPDATED - Fixed width */
         }
 
         #logo {
@@ -83,7 +82,7 @@
         }
 
         h1 {
-            font-size: 2.2em; /* UPDATED - Made smaller */
+            font-size: 2.2em; 
             font-weight: 700;
             color: #FFFFFF;
             margin-bottom: 15px;
@@ -101,7 +100,7 @@
         h2 {
             font-size: 1.5em;
             font-weight: 400;
-            font-style: italic; /* UPDATED - Italicized */
+            font-style: italic; 
             color: #79E0EE; /* Teal accent */
             margin-top: 10px;
         }
@@ -110,16 +109,16 @@
         @media (max-width: 600px) {
             .content-wrapper {
                 padding: 20px 25px;
-                width: 90%; 
+                width: 90%; /* This will override the fixed width on small screens */
             }
             h1 {
-                font-size: 1.8em; /* UPDATED - Made smaller */
+                font-size: 1.8em; 
             }
             p {
                 font-size: 1em;
             }
             h2 {
-                font-size: 1.3em; /* Italic style from above will still apply */
+                font-size: 1.3em; 
             }
         }
     </style>
@@ -625,7 +624,7 @@
                 float wave_y = map_base(p) - p.y; 
                 float foam_threshold = SEA_HEIGHT * 0.8; 
                 float foam_factor = smoothstep(foam_threshold - 0.15, foam_threshold + 0.1, -wave_y); 
-                color = mix(color, vec3(0.9, 0.95, 1.0), foam_factor * 0.08 * atten); // UPDATED - Reduced foam intensity further
+                color = mix(color, vec3(0.9, 0.95, 1.0), foam_factor * 0.08 * atten); 
 
                 color += vec3(specular(n, l, eye, 70.0)) * atten * 0.8; 
                 return color;
