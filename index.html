@@ -71,7 +71,8 @@
             -webkit-backdrop-filter: blur(8px); /* Safari support for backdrop-filter */
             border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
             max-width: 90%; /* Ensure it doesn't get too wide on large screens */
-            width: 500px; /* Fixed width for the content box */
+            width: -moz-fit-content; /* Firefox */
+            width: fit-content; 
         }
 
         #logo {
@@ -82,7 +83,7 @@
         }
 
         h1 {
-            font-size: 2.8em;
+            font-size: 2.2em; /* UPDATED - Made smaller */
             font-weight: 700;
             color: #FFFFFF;
             margin-bottom: 15px;
@@ -100,6 +101,7 @@
         h2 {
             font-size: 1.5em;
             font-weight: 400;
+            font-style: italic; /* UPDATED - Italicized */
             color: #79E0EE; /* Teal accent */
             margin-top: 10px;
         }
@@ -108,16 +110,16 @@
         @media (max-width: 600px) {
             .content-wrapper {
                 padding: 20px 25px;
-                width: 90%; /* More fluid width on small screens */
+                width: 90%; 
             }
             h1 {
-                font-size: 2.2em;
+                font-size: 1.8em; /* UPDATED - Made smaller */
             }
             p {
                 font-size: 1em;
             }
             h2 {
-                font-size: 1.3em;
+                font-size: 1.3em; /* Italic style from above will still apply */
             }
         }
     </style>
@@ -462,8 +464,8 @@
             const float SEA_CHOPPY = 4.0;
             const float SEA_SPEED = 0.8;
             const float SEA_FREQ = 0.16;
-            const vec3 SEA_BASE = vec3(0.01, 0.1, 0.4);        // UPDATED - Deeper, more saturated blue
-            const vec3 SEA_WATER_COLOR = vec3(0.1, 0.3, 0.8);  // UPDATED - Brighter, more saturated blue
+            const vec3 SEA_BASE = vec3(0.01, 0.12, 0.50);        
+            const vec3 SEA_WATER_COLOR = vec3(0.08, 0.28, 0.88);  
 
             mat2 octave_m = mat2(1.6, 1.2, -1.2, 1.6); 
 
@@ -499,25 +501,25 @@
                 return pow(max(dot(reflect(e, n), l), 0.0), s) * nrm;
             }
 
-            // UPDATED Sky Color Function
-            vec3 getSkyColor(vec3 e) { // e is the view direction of the ray
+            // Sky Color Function (Purple Sky)
+            vec3 getSkyColor(vec3 e) { 
                 vec3 normalizedEyeDir = normalize(e);
-                float eyeDotUp = max(normalizedEyeDir.y, 0.0); // How much the ray points upwards (0 at horizon, 1 straight up)
+                float eyeDotUp = max(normalizedEyeDir.y, 0.0); 
 
-                vec3 skyColorHorizon = vec3(0.45, 0.65, 0.85); // Lighter, slightly desaturated blue for horizon
-                vec3 skyColorZenith  = vec3(0.10, 0.25, 0.50); // Deeper blue for zenith
+                vec3 skyColorHorizon = vec3(0.45, 0.35, 0.65); 
+                vec3 skyColorZenith  = vec3(0.25, 0.15, 0.45); 
 
-                // Interpolate between horizon and zenith color
-                vec3 sky = mix(skyColorHorizon, skyColorZenith, pow(eyeDotUp, 0.6)); // Bias towards horizon color
+                vec3 sky = mix(skyColorHorizon, skyColorZenith, pow(eyeDotUp, 0.7));
 
-                // Sun
-                vec3 sunDirection = normalize(vec3(0.0, 0.7, 0.7)); // Main light direction (consistent)
-                float sunIntensityFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 32.0); 
-                float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 6.0);  
+                vec3 sunDirection = normalize(vec3(0.0, 0.6, 0.7)); 
+                float sunIntensityFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 48.0); 
+                float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
-                sky += vec3(1.0, 0.95, 0.85) * sunIntensityFactor * 0.7; // Sun disk color and intensity
-                sky += vec3(1.0, 0.90, 0.80) * sunGlowFactor * 0.3;    // Sun glow color and intensity
+                sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
                 
+                sky *= 0.8; 
+
                 return clamp(sky, 0.0, 1.0);
             }
 
@@ -616,16 +618,16 @@
 
                 vec3 color = mix(refracted_water, reflected_sky, fresnel);
 
-                float distVal = length(distVec); // Renamed from 'dist' to avoid conflict if any
+                float distVal = length(distVec); 
                 float atten = max(1.0 - distVal * distVal * 0.00001, 0.0); 
                 color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten; 
 
                 float wave_y = map_base(p) - p.y; 
-                float foam_threshold = SEA_HEIGHT * 0.75; // Adjusted foam threshold
-                float foam_factor = smoothstep(foam_threshold - 0.15, foam_threshold + 0.1, -wave_y); // Sharper foam transition
-                color = mix(color, vec3(0.9, 0.95, 1.0), foam_factor * 0.35 * atten); // UPDATED - Slightly bluish white foam, less intense
+                float foam_threshold = SEA_HEIGHT * 0.8; 
+                float foam_factor = smoothstep(foam_threshold - 0.15, foam_threshold + 0.1, -wave_y); 
+                color = mix(color, vec3(0.9, 0.95, 1.0), foam_factor * 0.08 * atten); // UPDATED - Reduced foam intensity further
 
-                color += vec3(specular(n, l, eye, 70.0)) * atten * 0.8; // Slightly adjusted specular
+                color += vec3(specular(n, l, eye, 70.0)) * atten * 0.8; 
                 return color;
             }
 
@@ -641,10 +643,10 @@
                 rayDir = fromEuler(camAng) * rayDir; 
 
                 vec3 hitPos; 
-                float distToHit = heightMapTracing(camPos, rayDir, hitPos); // Renamed from 'dist'
+                float distToHit = heightMapTracing(camPos, rayDir, hitPos); 
 
                 vec3 color;
-                vec3 lightDir = normalize(vec3(0.0, 0.7, 0.7)); // UPDATED - Consistent light direction
+                vec3 lightDir = normalize(vec3(0.0, 0.6, 0.7)); 
 
                 if (distToHit >= 1000.0 - EPSILON) { 
                     color = getSkyColor(rayDir);
@@ -653,8 +655,8 @@
                     color = getSeaColor(hitPos, normal, lightDir, rayDir, hitPos - camPos);
                 }
 
-                color = pow(color, vec3(0.75)); // Gamma correction
-                color = mix(vec3(dot(color, vec3(0.299, 0.587, 0.114))), color, 1.0); // Full saturation (no change here)
+                color = pow(color, vec3(0.75)); 
+                color = mix(vec3(dot(color, vec3(0.299, 0.587, 0.114))), color, 1.0); 
 
                 gl_FragColor = vec4(color, 1.0);
             }
