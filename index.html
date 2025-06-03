@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Orcas Audio - Coming Soon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Orcas Audio - Creative Audio Effects</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Global and Ocean Simulation Styles (Adapted from Doc 1) --- */
         * {
             margin: 0;
             padding: 0;
@@ -18,141 +17,269 @@
         html, body {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Prevent scrollbars from canvas */
-            background: #000; /* Fallback background for the page */
-            position: fixed; /* Fix for iOS Safari scrolling issues */
-            touch-action: none; /* Prevent default touch actions like pinch-zoom */
-            font-family: 'Inter', sans-serif; /* Default font for the page */
-            color: #E0E0E0; /* Default text color */
+            overflow-x: hidden;
+            background: #000;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* Styles for the dynamically created ocean canvas */
         canvas#oceanCanvas {
             display: block;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            touch-action: none; /* Specifically for the canvas */
-            z-index: 0; /* Ensure canvas is in the background */
+            touch-action: none;
+            z-index: 0;
         }
 
-        /* iOS-specific CSS to handle viewport height */
-        @supports (-webkit-touch-callout: none) {
-            body {
-                height: -webkit-fill-available;
-            }
+        /* Content Layer */
+        .content-layer {
+            position: relative;
+            z-index: 1;
+            padding: 40px;
+            min-height: 100vh;
         }
 
-        /* --- Landing Page Content Styles (Adapted from Doc 2) --- */
-        #landing-page-container {
-            position: absolute; /* Overlay on top of the canvas */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 1; /* Ensure content is above the ocean canvas */
-            overflow-y: auto; /* Allow content to scroll if it overflows viewport */
-            padding: 20px; /* Provide some spacing from screen edges */
-        }
-
-        .content-wrapper {
-            padding: 30px 40px;
-            background-color: rgba(10, 20, 40, 0.6); /* Semi-transparent dark background */
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(8px); /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(8px); /* Safari support for backdrop-filter */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
-            max-width: 90%; /* Ensure it doesn't get too wide on large screens */
-            width: 380px; /* UPDATED - Fixed width */
-        }
-
-        #logo {
-            max-width: 80%;
-            height: auto;
-            margin-bottom: 25px;
-            border-radius: 10px;
-        }
-
-        h1 {
-            font-size: 2.2em; 
+        /* Typography */
+        .title {
+            font-size: 3em;
             font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(79, 209, 197, 0.5), 0 0 20px rgba(255, 107, 107, 0.5);
+            font-style: italic;
+            color: #000;
+            margin-bottom: 20px;
+            text-align: left;
         }
 
-        p { /* Styling for the tilde separator */
+        .header {
+            font-size: 2em;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .section-divider {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #000;
+            margin: 40px 0;
+            white-space: pre;
+            line-height: 1;
+        }
+
+        .plugin-section {
+            margin-bottom: 60px;
+        }
+
+        .plugin-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .plugin-content {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .plugin-image {
+            flex: 0 0 400px;
+            max-width: 400px;
+        }
+
+        .plugin-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .plugin-info {
+            flex: 1;
+            color: #000;
+        }
+
+        .plugin-description {
             font-size: 1.1em;
-            font-weight: 300;
-            color: #B0C4DE; /* Light steel blue */
-            margin-bottom: 25px;
             line-height: 1.6;
+            margin-bottom: 20px;
         }
 
-        h2 {
+        .plugin-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .plugin-features li {
+            padding: 4px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .plugin-features li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .plugin-price {
             font-size: 1.5em;
-            font-weight: 400;
-            font-style: italic; 
-            color: #79E0EE; /* Teal accent */
-            margin-top: 10px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
         }
 
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 600px) {
-            .content-wrapper {
-                padding: 20px 25px;
-                width: 90%; /* This will override the fixed width on small screens */
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .content-layer {
+                padding: 20px;
             }
-            h1 {
-                font-size: 1.8em; 
+            
+            .title {
+                font-size: 2.5em;
+                text-align: center;
             }
-            p {
-                font-size: 1em;
+            
+            .header {
+                font-size: 1.5em;
+                text-align: center;
             }
-            h2 {
-                font-size: 1.3em; 
+
+            .plugin-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .plugin-image {
+                flex: none;
+                max-width: 100%;
+            }
+
+            .plugin-title,
+            .plugin-description,
+            .plugin-features,
+            .plugin-price {
+                text-align: center;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            html, body {
+                height: -webkit-fill-available;
             }
         }
     </style>
 </head>
 <body>
-    <div id="landing-page-container">
-        <div class="content-wrapper">
-            <img src="orcaLogo.png" alt="Orcas Audio Logo" id="logo"
-                 onerror="this.onerror=null; this.src='https://placehold.co/300x200/0A1428/FFFFFF?text=Orcas+Audio+Logo+Not+Found'; this.alt='Orcas Audio Logo Not Found';">
-            <h1>coming soon</h1>
-            <p>~</p>
-            <h2>orcas audio</h2>
+    <!-- Content Layer -->
+    <div class="content-layer">
+        <h1 class="title">orcas audio</h1>
+        <h2 class="header">creative audio effects</h2>
+        
+        <div class="section-divider">//==============================================================================</div>
+        
+        <div class="plugin-section">
+            <h3 class="plugin-title">Undertow</h3>
+            <div class="plugin-content">
+                <div class="plugin-image">
+                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/undertowVST.png" 
+                         alt="Undertow VST Plugin Interface">
+                </div>
+                <div class="plugin-info">
+                    <p class="plugin-description">
+                        Dive deep into immersive soundscapes with Undertow, a VST plugin that combines an
+                        advanced reverb algorithm with innovative delay processing. Create waves of audio the ebbb and flow with musical velocity.
+                    </p>
+                    <ul class="plugin-features">
+                        <li>Advanced Reverb Engine with freeze-control for atmosphere creation.</li>
+                        <li>Inline Analog Delay with Tempo Sync</li>
+                        <li>Analog inspired soft-clipper for harmonic saturation</li>
+                        <li>Low CPU Usage for Studio or Live Performance</li>
+                        <li>Compatible with All Major DAWs in VST3 format (AU coming soon)</li>
+                    </ul>
+                    <div class="plugin-price">$19</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider">//==============================================================================</div>
+        
+        <div class="plugin-section">
+            <h3 class="plugin-title">HarmBass</h3>
+            <div class="plugin-content">
+                <div class="plugin-image">
+                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/HarmBass.png" 
+                         alt="HarmBass VST Plugin Interface">
+                </div>
+                <div class="plugin-info">
+                    <p class="plugin-description">
+                        Transform your low end with HarmBass, a powerful bass harmonic saturator featuring four meticulously 
+                        modeled distortion algorithms based on real hardware. Add warmth, grit, and character to your bass 
+                        tracks with precision frequency control and authentic analog saturation.
+                    </p>
+                    <ul class="plugin-features">
+                        <li>Four distortion algorithms modeled after real hardware units</li>
+                        <li>Dedicated bass frequency control for targeted saturation</li>
+                        <li>Soft clipper algorithm for smooth harmonic enhancement</li>
+                        <li>Analog-modeled saturation for authentic vintage warmth</li>
+                        <li>Low CPU usage optimized for bass processing</li>
+                        <li>Compatible with All Major DAWs in VST3 format (AU coming soon)</li>
+                    </ul>
+                    <div class="plugin-price">$19</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider">//==============================================================================</div>
+        
+        <div class="plugin-section">
+            <h3 class="plugin-title">Quad Cascade</h3>
+            <div class="plugin-content">
+                <div class="plugin-image">
+                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/quad%20cascade.png" 
+                         alt="Quad Cascade VST Plugin Interface">
+                </div>
+                <div class="plugin-info">
+                    <p class="plugin-description">
+                        Create cascading echoes and complex rhythmic patterns with Quad Cascade, a sophisticated 
+                        4-stage series analog delay. Each stage features independent feedback and gain controls, 
+                        allowing for intricate delay textures and evolving soundscapes that build upon themselves.
+                    </p>
+                    <ul class="plugin-features">
+                        <li>4-stage series analog delay for complex echo patterns</li>
+                        <li>Independent feedback control for each delay stage</li>
+                        <li>Individual gain controls for precise level balancing</li>
+                        <li>Built-in soft clipper for warm analog saturation</li>
+                        <li>Level trim control for optimal output management</li>
+                        <li>Compatible with All Major DAWs in VST3 format (AU coming soon)</li>
+                    </ul>
+                    <div class="plugin-price">$19</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Ocean Simulation JavaScript (from original Doc 1, slightly modified) ---
         let canvas, gl;
         let program;
         let startTime = Date.now();
         let mouse = { x: 0, y: 0 };
-        let splashes = []; // Array to hold multiple splashes
-        const MAX_SPLASHES = 10; // Reduced for better performance on Safari
+        let splashes = [];
+        const MAX_SPLASHES = 10;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
         window.onload = function() {
-            // Create canvas for the ocean simulation
             canvas = document.createElement('canvas');
-            canvas.id = 'oceanCanvas'; // Assign an ID for specific styling
-            document.body.insertBefore(canvas, document.body.firstChild); // Insert canvas as the first child of body
+            canvas.id = 'oceanCanvas';
+            document.body.insertBefore(canvas, document.body.firstChild);
 
-            resize(); // Set initial canvas size
+            resize();
 
             const contextAttributes = {
                 alpha: false, antialias: false, preserveDrawingBuffer: false, stencil: false,
@@ -169,17 +296,14 @@
                 const msg = document.createElement('div');
                 msg.style.color = 'white'; msg.style.position = 'absolute';
                 msg.style.top = '50%'; msg.style.left = '50%';
-                msg.style.transform = 'translate(-50%, -50%)'; // Center message
-                msg.style.zIndex = '2'; // Ensure message is above canvas
+                msg.style.transform = 'translate(-50%, -50%)';
+                msg.style.zIndex = '2';
                 msg.innerHTML = 'Your browser does not support WebGL, which is required for the background animation.';
                 document.body.appendChild(msg);
-                // Hide the main content if WebGL fails, as the background is integral
-                const landingContainer = document.getElementById('landing-page-container');
-                if(landingContainer) landingContainer.style.display = 'none';
                 return;
             }
 
-            gl.clear(gl.COLOR_BUFFER_BIT); // Clear context for iOS Safari
+            gl.clear(gl.COLOR_BUFFER_BIT);
 
             program = createProgram(gl, vertexShader, fragmentShader);
 
@@ -191,7 +315,6 @@
             gl.enableVertexAttribArray(positionLocation);
             gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-            // Event listeners
             window.addEventListener('resize', resize, false);
 
             const unlockAudio = function() {
@@ -204,30 +327,25 @@
                 document.body.removeEventListener('touchend', unlockAudio);
                 document.body.removeEventListener('click', unlockAudio);
             };
-            document.body.addEventListener('touchstart', unlockAudio, {passive: true, once: true}); // Use passive and once for better performance
+            document.body.addEventListener('touchstart', unlockAudio, {passive: true, once: true});
             document.body.addEventListener('click', unlockAudio, {passive: true, once: true});
 
-
-            // Touch events for canvas interaction
             canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
             canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
             canvas.addEventListener('touchend', handleTouchEnd, {passive: false});
             canvas.addEventListener('touchcancel', handleTouchEnd, {passive: false});
 
-            // Mouse events for canvas interaction
             canvas.addEventListener('mousemove', updateMouse, false);
             canvas.addEventListener('mousedown', handleClick, false);
 
-            // Initialize splashes array
             for (let i = 0; i < MAX_SPLASHES; i++) {
                 splashes.push({ active: 0, worldX: 0, worldZ: 0, time: 0, strength: 0, particleCount: 0 });
             }
 
-            animate(); // Start the ocean animation
+            animate();
 
-            // Delayed actions (previously in nested 'load' listener)
             setTimeout(function() {
-                resize(); // Ensure resize is called after potential layout shifts
+                resize();
                 if (isIOS) {
                     console.log("iOS detected, initializing touch handling for ocean sim");
                 }
@@ -251,7 +369,7 @@
             }
 
             const pixelRatio = window.devicePixelRatio || 1;
-            if (canvas) { // Ensure canvas exists
+            if (canvas) {
                 canvas.width = width * pixelRatio;
                 canvas.height = height * pixelRatio;
                 canvas.style.width = width + 'px';
@@ -387,7 +505,6 @@
             gl.uniform1f(gl.getUniformLocation(program, 'iTime'), time);
             gl.uniform2f(gl.getUniformLocation(program, 'iResolution'), canvas.width, canvas.height);
             gl.uniform2f(gl.getUniformLocation(program, 'iMouse'), mouse.x * 2.0 - 1.0, (mouse.y * 2.0 - 1.0));
-
 
             for (let i = 0; i < MAX_SPLASHES; i++) {
                 const splashLocation = gl.getUniformLocation(program, 'iSplashes[' + i + ']');
@@ -663,4 +780,3 @@
     </script>
 </body>
 </html>
-
