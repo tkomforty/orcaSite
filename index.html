@@ -221,12 +221,31 @@
                 max-width: 100%;
             }
 
+            /* --- FIX STARTS HERE --- */
+            .plugin-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            /* --- FIX ENDS HERE --- */
+
             .plugin-title,
             .plugin-description,
             .plugin-features,
             .plugin-price {
                 text-align: center;
             }
+            
+            /* This makes sure the list items are also centered */
+            .plugin-features li {
+                 padding-left: 0; /* Remove left padding */
+                 text-align: center;
+                 list-style-position: inside; /* Helps center the bullet */
+            }
+
+             .plugin-features li::before {
+                content: none; /* Hide the custom bullet as we use default now */
+             }
         }
 
         @supports (-webkit-touch-callout: none) {
@@ -796,7 +815,7 @@
                 float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
                 sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
-                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;   
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
                 
                 sky *= 0.8; 
 
