@@ -218,6 +218,24 @@
             opacity: 0; /* Initial state for GSAP animation */
             pointer-events: none; /* Can't be clicked when invisible */
         }
+        
+        /* --- Cursor Particle Effect --- */
+        .particle {
+            position: fixed;
+            left: 0;
+            top: 0;
+            /* removed border-radius to make them square */
+            pointer-events: none;
+            z-index: 9999;
+            animation: particle-animation 1s ease-out forwards;
+        }
+
+        @keyframes particle-animation {
+            to {
+                opacity: 0;
+                transform: translate(var(--x), var(--y));
+            }
+        }
 
 
         /* Mobile Responsive */
@@ -405,6 +423,50 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+        // --- Particle Effect Logic ---
+        let canSpawnParticle = true;
+        const blueShades = [
+            'rgba(25, 25, 112, 0.7)', // Midnight Blue
+            'rgba(0, 0, 139, 0.7)',   // Dark Blue
+            'rgba(0, 0, 205, 0.7)',   // Medium Blue
+            'rgba(65, 105, 225, 0.7)' // Royal Blue
+        ];
+        
+        function spawnParticle(x, y) {
+            if (!canSpawnParticle) return;
+            canSpawnParticle = false;
+
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            document.body.appendChild(particle);
+
+            const size = Math.floor(Math.random() * 2) + 1; // Particle size from 1px to 2px
+            const destinationX = (Math.random() - 0.5) * 100; // Random X destination
+            const destinationY = (Math.random() - 0.5) * 100; // Random Y destination
+            const color = blueShades[Math.floor(Math.random() * blueShades.length)];
+
+
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${x - size / 2}px`;
+            particle.style.top = `${y - size / 2}px`;
+            particle.style.backgroundColor = color;
+            
+            // Set CSS variables for the animation
+            particle.style.setProperty('--x', `${destinationX}px`);
+            particle.style.setProperty('--y', `${destinationY}px`);
+
+            // Remove the particle from the DOM after animation
+            setTimeout(() => {
+                particle.remove();
+            }, 1000); // Animation duration is 1s
+
+            // Throttle particle creation
+            setTimeout(() => {
+                canSpawnParticle = true;
+            }, 20); // Create a new particle at most every 20ms
+        }
+        
         window.onload = function() {
             canvas = document.createElement('canvas');
             canvas.id = 'oceanCanvas';
@@ -461,6 +523,10 @@
             canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
             canvas.addEventListener('touchend', handleTouchEnd, {passive: false});
             canvas.addEventListener('touchcancel', handleTouchEnd, {passive: false});
+            
+            // Add mousemove listener for particle effect
+            window.addEventListener('mousemove', (e) => spawnParticle(e.clientX, e.clientY), false);
+            
             canvas.addEventListener('mousemove', updateMouse, false);
             canvas.addEventListener('mousedown', handleClick, false);
 
