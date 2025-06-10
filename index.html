@@ -165,6 +165,18 @@
             margin-bottom: 15px;
         }
         
+        /* --- Buy Button Glow Effect --- */
+        stripe-buy-button {
+            border-radius: 50px; /* Rounded to match the button's shape */
+            overflow: hidden;    /* Ensures glow conforms to the radius */
+            box-shadow: 0 0 10px 2px rgba(108, 166, 205, 0.4); /* Soft, subtle dark blue glow */
+            transition: box-shadow 0.3s ease-in-out; /* Smooth transition */
+        }
+
+        stripe-buy-button:hover {
+            box-shadow: 0 0 16px 4px rgba(108, 166, 205, 0.6); /* Intensified blue glow on hover */
+        }
+        
         /* Styles for the image popup modal */
         .image-popup-modal {
             position: fixed;
@@ -234,13 +246,11 @@
                 max-width: 100%;
             }
 
-            /* --- FIX STARTS HERE --- */
             .plugin-info {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
-            /* --- FIX ENDS HERE --- */
 
             .plugin-title,
             .plugin-description,
@@ -249,7 +259,6 @@
                 text-align: center;
             }
             
-            /* This makes sure the list items are also centered */
             .plugin-features li {
                  padding-left: 0; /* Remove left padding */
                  text-align: center;
