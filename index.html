@@ -104,6 +104,7 @@
         .plugin-image {
             flex: 0 0 400px;
             max-width: 400px;
+            cursor: pointer; /* Add cursor pointer to indicate it's clickable */
         }
 
         .plugin-image img {
@@ -111,6 +112,8 @@
             height: auto;
             border-radius: 8px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            /* This will prevent the image from jumping on click */
+            vertical-align: middle; 
         }
 
         .plugin-info {
@@ -148,6 +151,49 @@
             color: #000;
             margin-bottom: 15px;
         }
+        
+        /* Styles for the image popup modal */
+        .image-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0); /* Initial state for GSAP animation */
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .image-popup-modal-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-popup-modal-content img {
+            width: auto;
+            height: auto;
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 8px;
+        }
+
+        .close-popup {
+            position: fixed; /* Changed from absolute to fixed */
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1001; /* Ensure it's above the image */
+            opacity: 0; /* Initial state for GSAP animation */
+            pointer-events: none; /* Can't be clicked when invisible */
+        }
+
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
@@ -190,8 +236,20 @@
         }
     </style>
     <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+    <!-- GSAP Libraries for advanced animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
 </head>
 <body>
+    <!-- Image Popup Modal -->
+    <div id="imagePopup" class="image-popup-modal">
+        <div class="image-popup-modal-content">
+            <!-- The clicked image will be moved here by JavaScript -->
+        </div>
+        <!-- Moved close button to be a direct child of the modal -->
+        <span class="close-popup" id="closePopup">&times;</span>
+    </div>
+
     <!-- Content Layer -->
     <div class="content-layer">
         <h1 class="title">orcas audio</h1>
@@ -220,10 +278,10 @@
                     </ul>
                     <div class="plugin-price">$19</div>
                     <stripe-buy-button
-  buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
-  publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
->
-</stripe-buy-button>
+                        buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
+                        publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
+                    >
+                    </stripe-buy-button>
                 </div>
             </div>
         </div>
@@ -253,10 +311,10 @@
                     </ul>
                     <div class="plugin-price">$30</div>
                      <stripe-buy-button
-  buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
-  publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
->
-</stripe-buy-button>
+                        buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
+                        publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
+                    >
+                    </stripe-buy-button>
                 </div>
             </div>
         </div>
@@ -286,10 +344,10 @@
                     </ul>
                     <div class="plugin-price">$25</div>
                      <stripe-buy-button
-  buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
-  publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
->
-</stripe-buy-button>
+                        buy-button-id="buy_btn_1RVzgJRoq3ytCMWwHfuNXOU4"
+                        publishable-key="pk_test_51RVzbARoq3ytCMWwCkVu7Y9Xg3CTmCRbulhnFe14ocUvVq1J19mXbY4NXIKi2fT8HCKBqE1iSOj51FxiGqtfbVPm00dnSwA4Ky"
+                    >
+                    </stripe-buy-button>
                 </div>
             </div>
         </div>
@@ -336,17 +394,13 @@
             }
 
             gl.clear(gl.COLOR_BUFFER_BIT);
-
             program = createProgram(gl, vertexShader, fragmentShader);
-
             const vertexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-
             const positionLocation = gl.getAttribLocation(program, 'aPosition');
             gl.enableVertexAttribArray(positionLocation);
             gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
             window.addEventListener('resize', resize, false);
 
             const unlockAudio = function() {
@@ -366,13 +420,91 @@
             canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
             canvas.addEventListener('touchend', handleTouchEnd, {passive: false});
             canvas.addEventListener('touchcancel', handleTouchEnd, {passive: false});
-
             canvas.addEventListener('mousemove', updateMouse, false);
             canvas.addEventListener('mousedown', handleClick, false);
 
             for (let i = 0; i < MAX_SPLASHES; i++) {
                 splashes.push({ active: 0, worldX: 0, worldZ: 0, time: 0, strength: 0, particleCount: 0 });
             }
+
+            // --- GSAP Image Popup Logic ---
+            gsap.registerPlugin(Flip);
+
+            const popup = document.querySelector('#imagePopup');
+            const popupContent = document.querySelector('.image-popup-modal-content');
+            const closeButton = document.querySelector('#closePopup');
+            const pluginImageContainers = document.querySelectorAll('.plugin-image');
+            let originalParent = null;
+            let activeImage = null;
+            let isAnimating = false; // Flag to prevent re-triggering animations
+
+            pluginImageContainers.forEach(container => {
+                container.addEventListener('click', () => {
+                    if (isAnimating || activeImage) return;
+                    isAnimating = true;
+                    
+                    activeImage = container.querySelector('img');
+                    originalParent = container;
+
+                    const state = Flip.getState(activeImage);
+
+                    popup.style.display = 'flex';
+                    popupContent.appendChild(activeImage);
+
+                    Flip.from(state, {
+                        duration: 0.6,
+                        ease: 'power2.inOut',
+                        absolute: true,
+                        onComplete: () => {
+                            isAnimating = false;
+                        }
+                    });
+                    
+                    gsap.to(popup, { backgroundColor: 'rgba(0,0,0,0.8)', duration: 0.5 });
+                    // Fade in the close button after the main animation starts
+                    gsap.to(closeButton, { opacity: 1, pointerEvents: 'auto', delay: 0.3, duration: 0.3 });
+                });
+            });
+
+            const closeThePopup = () => {
+                if (isAnimating || !activeImage || !originalParent) return;
+                isAnimating = true;
+
+                // Immediately fade out the close button
+                gsap.to(closeButton, { opacity: 0, pointerEvents: 'none', duration: 0.2 });
+
+                const state = Flip.getState(activeImage);
+                originalParent.appendChild(activeImage);
+
+                Flip.from(state, {
+                    duration: 0.6,
+                    ease: 'power2.inOut',
+                    absolute: true,
+                    onComplete: () => {
+                        activeImage = null;
+                        originalParent = null;
+                        isAnimating = false;
+                    }
+                });
+                
+                gsap.to(popup, {
+                    backgroundColor: 'rgba(0,0,0,0)', 
+                    duration: 0.5,
+                    onComplete: () => {
+                        popup.style.display = 'none';
+                    }
+                });
+            };
+
+            closeButton.addEventListener('click', e => {
+                e.stopPropagation();
+                closeThePopup();
+            });
+
+            popup.addEventListener('click', () => {
+                closeThePopup();
+            });
+
 
             animate();
 
@@ -612,7 +744,7 @@
             const float SEA_CHOPPY = 4.0;
             const float SEA_SPEED = 0.8;
             const float SEA_FREQ = 0.16;
-            const vec3 SEA_BASE = vec3(0.01, 0.12, 0.50);        
+            const vec3 SEA_BASE = vec3(0.01, 0.12, 0.50);      
             const vec3 SEA_WATER_COLOR = vec3(0.08, 0.28, 0.88);  
 
             mat2 octave_m = mat2(1.6, 1.2, -1.2, 1.6); 
@@ -664,7 +796,7 @@
                 float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
                 sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
-                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;   
                 
                 sky *= 0.8; 
 
@@ -719,7 +851,7 @@
                 float splash_effect = 0.0;
                 for (int i = 0; i < ${MAX_SPLASHES}; ++i) {
                     if (iSplashes[i].w > 0.0) { 
-                         splash_effect += calculateSplash(p, iSplashes[i], iSplashProps[i]);
+                          splash_effect += calculateSplash(p, iSplashes[i], iSplashProps[i]);
                     }
                 }
                 return p.y - (h_base + splash_effect);
