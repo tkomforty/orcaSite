@@ -24,6 +24,11 @@
     <title>Orcas Audio - Creative Audio Effects</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'CustomTypeface';
+            src: url('https://raw.githubusercontent.com/tkomforty/orcaSite/main/customTypeface.ttf') format('truetype');
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -59,12 +64,17 @@
 
         /* Typography */
         .title {
-            font-size: 3em;
+            font-family: 'CustomTypeface', 'Inter', sans-serif;
+            font-size: 5em; /* Increased font size */
             font-weight: 700;
             font-style: italic;
-            color: #000;
+            color: transparent; /* Make text transparent */
             margin-bottom: 20px;
             text-align: left;
+            letter-spacing: 4px; /* Added kerning */
+            background: linear-gradient(to bottom, white, black); /* Gradient */
+            -webkit-background-clip: text; /* Apply gradient to text */
+            background-clip: text;
         }
 
         .header {
@@ -202,7 +212,7 @@
             }
             
             .title {
-                font-size: 2.5em;
+                font-size: 3.5em; /* Adjusted size for mobile */
                 text-align: center;
             }
             
@@ -272,7 +282,7 @@
     <!-- Content Layer -->
     <div class="content-layer">
         <h1 class="title">orcas audio</h1>
-        <h2 class="header">creative audio effects</h2>
+        <h2 class="header">tailored sonic processing</h2>
         
         <div class="section-divider">//==============================================================================</div>
         
