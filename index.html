@@ -273,6 +273,15 @@
             margin-bottom: 10px;
         }
 
+        /* --- Footer --- */
+        .site-footer {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            text-align: center;
+            color: #ccc;
+            font-size: 0.9em;
+        }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
@@ -314,14 +323,14 @@
             }
             
             .plugin-features li {
-                 padding-left: 0; /* Remove left padding */
-                 text-align: center;
-                 list-style-position: inside; /* Helps center the bullet */
+                padding-left: 0; /* Remove left padding */
+                text-align: center;
+                list-style-position: inside; /* Helps center the bullet */
             }
 
-             .plugin-features li::before {
+            .plugin-features li::before {
                 content: none; /* Hide the custom bullet as we use default now */
-             }
+            }
 
             /* --- NEW RESPONSIVE STYLES --- */
             .info-section-container {
@@ -462,7 +471,7 @@
         
         <!-- === INFO CONTENT STARTS HERE === -->
         <div class="section-divider" style="color: #666;">//==============================================================================</div>
-     
+    
         <div class="info-section-container">
             <div class="info-section">
                 <h3 class="info-title">Installation</h3>
@@ -482,7 +491,7 @@
                     Orcas Audio plugins are provided "as is" without warranty. Our liability is limited to the purchase price of the software.
                 </p>
             </div>
-    
+        
             <div class="info-section">
                 <h3 class="info-title">Delivery</h3>
                 <ul class="info-list">
@@ -490,7 +499,7 @@
                     <li>Installation instructions included with download</li>
                 </ul>
             </div>
-    
+        
             <div class="info-section">
                 <h3 class="info-title">Refund</h3>
                  <ul class="info-list">
@@ -520,6 +529,11 @@
         
     </div>
 
+    <!-- Footer added here -->
+    <footer class="site-footer">
+        © Orcas Audio 2025
+    </footer>
+
     <script>
         let canvas, gl;
         let program;
@@ -529,7 +543,7 @@
         const MAX_SPLASHES = 10;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
         // --- Particle Effect Logic ---
         let canSpawnParticle = true;
@@ -1011,7 +1025,7 @@
                 float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
                 sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
-                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;   
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
                 
                 sky *= 0.8; 
 
