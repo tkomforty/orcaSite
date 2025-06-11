@@ -236,6 +236,44 @@
                 transform: translate(var(--x), var(--y));
             }
         }
+        
+        /* --- NEW STYLES FOR INFO SECTIONS --- */
+        .info-section-container {
+            padding: 20px 0;
+            color: #ccc; /* Light gray for readability on the animated background */
+            max-width: 900px; /* Aligns with plugin section width */
+            margin: 0 auto; /* Center the container itself */
+            text-align: left; /* Left align text by default */
+        }
+
+        .info-section {
+            margin-bottom: 40px;
+        }
+
+        .info-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #fff; /* White title */
+            margin-bottom: 20px;
+            font-family: 'CustomTypeface', 'Inter', sans-serif;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .info-text, .info-list {
+            font-size: 1em; /* Reduced font size */
+            line-height: 1.6;
+            max-width: 800px; /* Constrain width for readability */
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            margin-bottom: 10px;
+        }
 
 
         /* Mobile Responsive */
@@ -286,6 +324,20 @@
              .plugin-features li::before {
                 content: none; /* Hide the custom bullet as we use default now */
              }
+
+            /* --- NEW RESPONSIVE STYLES --- */
+            .info-section-container {
+                text-align: center; /* Center text on mobile */
+            }
+            .info-title {
+                font-size: 1.5em;
+            }
+            .info-text, .info-list {
+                font-size: 1em;
+                padding: 0 15px; /* Add some horizontal padding */
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
 
         @supports (-webkit-touch-callout: none) {
@@ -356,7 +408,7 @@
                 </div>
                 <div class="plugin-info">
                     <p class="plugin-description">
-                        Create cascading echoes and complex rhythmic patterns with a simple, but complex  
+                        Create cascading echoes and complex rhythmic patterns with a simple, but complex 
                         4-stage series analog delay. Each stage features independent feedback and gain controls, 
                         allowing for intricate delay textures and evolving soundscapes that build upon themselves.
                     </p>
@@ -409,6 +461,52 @@
                 </div>
             </div>
         </div>
+        
+        <!-- === INFO CONTENT STARTS HERE === -->
+        <div class="section-divider" style="color: #666;">//==============================================================================</div>
+
+        <div class="info-section-container">
+            <div class="info-section">
+                <h3 class="info-title">Limitation of Liability</h3>
+                <p class="info-text">
+                    Orcas Audio plugins are provided "as is" without warranty. Our liability is limited to the purchase price of the software.
+                </p>
+            </div>
+    
+            <div class="info-section">
+                <h3 class="info-title">Delivery</h3>
+                <ul class="info-list">
+                    <li>Digital download links provided immediately after purchase</li>
+                    <li>Installation instructions included with download</li>
+                </ul>
+            </div>
+    
+            <div class="info-section">
+                <h3 class="info-title">Refund</h3>
+                 <ul class="info-list">
+                    <li>Email <a href="mailto:support@orcasaudio.com" style="color: #8cb8d3; text-decoration: none;">support@orcasaudio.com</a></li>
+                    <li>Include the reason for your refund request</li>
+                    <li>Refunds will be processed within 3-5 business days to your original payment method</li>
+                    <li>Refunds are available for 14 days from the date of purchase.</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3 class="info-title">Software Distribution Restrictions</h3>
+                <p class="info-text">
+                    You may not share, distribute, or redistribute these plugins in any form without explicit written authorization from Orcas Audio. This prohibition includes:
+                </p>
+                 <ul class="info-list" style="padding-top: 10px;">
+                    <li>Sharing files through file-sharing platforms or websites</li>
+                    <li>Including plugins in software bundles or compilation packages</li>
+                    <li>Distributing via physical media, online downloads, or promotional materials</li>
+                    <li>Embedding or integrating the software into other applications, games, or digital audio workstations</li>
+                    <li>Commercial or non-commercial redistribution of any kind</li>
+                    <li style="padding-top: 10px;">Only the original purchaser may use the licensed software under the terms of this agreement.</li>
+                </ul>
+            </div>
+        </div>
+        <!-- === INFO CONTENT ENDS HERE === -->
         
     </div>
 
@@ -903,7 +1001,7 @@
                 float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
                 sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
-                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;   
                 
                 sky *= 0.8; 
 
@@ -958,7 +1056,7 @@
                 float splash_effect = 0.0;
                 for (int i = 0; i < ${MAX_SPLASHES}; ++i) {
                     if (iSplashes[i].w > 0.0) { 
-                          splash_effect += calculateSplash(p, iSplashes[i], iSplashProps[i]);
+                        splash_effect += calculateSplash(p, iSplashes[i], iSplashProps[i]);
                     }
                 }
                 return p.y - (h_base + splash_effect);
