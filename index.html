@@ -247,7 +247,10 @@
             opacity: 0; /* Initial state for GSAP animation */
             pointer-events: none; /* Can't be clicked when invisible */
         }
-        
+
+        .orca-shadow {
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+}
         /* --- Cursor Particle Effect --- */
         .particle {
             position: fixed;
@@ -425,7 +428,7 @@
     <div class="content-layer">
         <div style="display: flex; ">
     <h1 class="title" style="margin:0; padding:0;">Orcas Audio</h1>
-            <img src="orca1.png" alt="Orca" style="height: 120px;">
+            <img src="orca1.png" alt="Orca" style="height: 120px;" class="orca-shadow">
         </div>
         <h2 class="header">tailored sonic processing</h2>
         
