@@ -80,8 +80,8 @@
         0 4px 24px rgba(120, 0, 0, 0.3);   /* Additional soft black glow */
      /* Add this line for the white border */
     display: inline-block;     /* Add this line so the border fits the text */
-    padding: 10px 20px;        /* Optional: adds space between text and border */
-    box-sizing: border-box;    /* Ensures padding doesn't push out the border */
+    padding: 10px 20px;         /* Optional: adds space between text and border */
+    box-sizing: border-box;   /* Ensures padding doesn't push out the border */
 }
 
         .header {
@@ -112,9 +112,9 @@
     font-family: 'CustomTypeface', 'Inter', sans-serif;
     font-size: 3em;           /* Increased size */
     font-weight: 400;
-    color: #000;              /* Black text */
+    color: #000;               /* Black text */
     margin-bottom: 20px;
-        font-style: italic;       /* This makes the text italic */
+    font-style: italic;       /* This makes the text italic */
 
     /* Removed text-shadow to eliminate glow */
 }
@@ -192,7 +192,7 @@
         /* --- Buy Button Glow Effect --- */
         stripe-buy-button {
             border-radius: 50px; /* Rounded to match the button's shape */
-            overflow: hidden;    /* Ensures glow conforms to the radius */
+            overflow: hidden;   /* Ensures glow conforms to the radius */
             box-shadow: 0 0 10px 2px rgba(108, 166, 205, 0.4); /* Soft, subtle dark blue glow */
             transition: box-shadow 0.3s ease-in-out; /* Smooth transition */
         }
@@ -351,7 +351,7 @@
             }
             
             .plugin-features li {
-                                        font-family: 'CustomTypeface', 'Inter', sans-serif;
+                                                font-family: 'CustomTypeface', 'Inter', sans-serif;
 
                 
                 padding-left: 0; /* Remove left padding */
@@ -360,24 +360,24 @@
             }
 
             .plugin-features li::before {
-                                        font-family: 'CustomTypeface', 'Inter', sans-serif;
+                                                font-family: 'CustomTypeface', 'Inter', sans-serif;
 
                 content: none; /* Hide the custom bullet as we use default now */
             }
 
             /* --- NEW RESPONSIVE STYLES --- */
             .info-section-container {
-                                        font-family: 'CustomTypeface', 'Inter', sans-serif;
+                                                font-family: 'CustomTypeface', 'Inter', sans-serif;
 
                 text-align: center; /* Center text on mobile */
             }
             .info-title {
-                                        font-family: 'CustomTypeface', 'Inter', sans-serif;
+                                                font-family: 'CustomTypeface', 'Inter', sans-serif;
 
                 font-size: 1.5em;
             }
             .info-text, .info-list {
-                                        font-family: 'CustomTypeface', 'Inter', sans-serif;
+                                                font-family: 'CustomTypeface', 'Inter', sans-serif;
 
                 font-size: 1em;
                 padding: 0 15px; /* Add some horizontal padding */
@@ -498,7 +498,7 @@
                         <li>Low CPU usage optimized for bass processing</li>
                         <li>Compatible with All Major DAWs in VST3 format (AU coming soon)</li>
                     </ul>
-                   
+                    
                 
                     
                 </div>
@@ -1012,6 +1012,10 @@
             const vec3 SEA_BASE = vec3(0.01, 0.12, 0.50);      
             const vec3 SEA_WATER_COLOR = vec3(0.08, 0.28, 0.88);  
 
+            // Bird simulation constants
+            const int NUM_BIRDS = 35; 
+            const float BIRD_SIZE = 0.0035;
+
             mat2 octave_m = mat2(1.6, 1.2, -1.2, 1.6); 
 
             mat3 fromEuler(vec3 ang) {
@@ -1029,6 +1033,15 @@
                 float h = dot(p, vec2(127.1, 311.7));
                 return fract(sin(h) * 43758.5453123);
             }
+            
+            float hash1(float n) {
+                return fract(sin(n) * 43758.5453);
+            }
+
+            vec2 hash2(float n) {
+                return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453, 22578.1459));
+            }
+
 
             float noise(in vec2 p) {
                 vec2 i = floor(p);
@@ -1044,6 +1057,69 @@
             float specular(vec3 n, vec3 l, vec3 e, float s) {
                 float nrm = (s + 8.0) / (PI * 8.0);
                 return pow(max(dot(reflect(e, n), l), 0.0), s) * nrm;
+            }
+            
+            // --- Boid Flocking Logic ---
+
+            void getBoidState(float id, float time, out vec2 pos, out vec2 vel) {
+                float aspectRatio = iResolution.x / iResolution.y;
+                float initialTime = hash1(id) * 1000.0;
+                float t = time + initialTime;
+                
+                float flockId = floor(id / 7.0); 
+                
+                // COHESION: Reduced the spread of flock centers to bring them closer.
+                vec2 flockCenter = (hash2(flockId) - 0.5) * 1.0; // Was 2.0
+                
+                // COHESION: Reduced the personal offset to make boids within a flock tighter.
+                vec2 personalOffset = (hash2(id * 2.0) - 0.5) * 0.2; // Was 0.5
+                
+                float angle = t * 0.05 + hash1(flockId) * 2.0 * PI;
+                vec2 basePos = vec2(cos(angle), sin(angle) * 0.2) * (aspectRatio * 0.8);
+                
+                float personalAngle = t * 0.2 + hash1(id * 3.0) * 2.0 * PI;
+                vec2 personalMotion = vec2(cos(personalAngle), sin(personalAngle)) * 0.2;
+                
+                // COHESION: Reduced the influence of the flock center, further tightening groups.
+                pos = basePos + flockCenter * 0.2 + personalMotion + personalOffset; // Was flockCenter * 0.5
+                
+                pos.y = pos.y * 0.4 + 0.5;
+
+                vec2 velAngle = vec2(-sin(angle), cos(angle) * 0.2) * (aspectRatio * 0.8) * 0.05;
+                vec2 velPersonal = vec2(-sin(personalAngle), cos(personalAngle)) * 0.2 * 0.2;
+                vel = velAngle + velPersonal;
+            }
+
+            vec4 renderBirds(vec2 fragCoord) {
+                vec4 birdColor = vec4(0.0);
+            
+                for (int i = 0; i < NUM_BIRDS; i++) {
+                    float id = float(i);
+                    vec2 pos, vel;
+                    getBoidState(id, iTime, pos, vel);
+            
+                    float depth = mix(0.3, 1.0, pos.y * 0.5 + hash1(id * 5.0) * 0.5);
+            
+                    vec2 direction = normalize(vel);
+                    mat2 rotation = mat2(direction.x, -direction.y, direction.y, direction.x);
+                    
+                    vec2 uv = (fragCoord - pos);
+                    uv = uv / (BIRD_SIZE * depth);
+                    uv = rotation * uv;
+
+                    // Slower flapping
+                    float flap = sin(iTime * 8.0 - id); 
+
+                    float birdShape = 0.0;
+                    if (abs(uv.x) < 2.0 && abs(uv.y + abs(uv.x) * (0.5 + flap * 0.2)) < 0.5) {
+                        birdShape = 1.0;
+                    }
+                    
+                    if (birdShape > 0.5) {
+                        birdColor = vec4(0.0, 0.0, 0.0, 1.0);
+                    }
+                }
+                return birdColor;
             }
 
             // Sky Color Function (Purple Sky)
@@ -1177,8 +1253,8 @@
             }
 
             void main() {
-                vec2 uv = gl_FragCoord.xy / iResolution.xy; 
-                vec2 p_screen = uv * 2.0 - 1.0; 
+                vec2 uv_norm = gl_FragCoord.xy / iResolution.xy; 
+                vec2 p_screen = uv_norm * 2.0 - 1.0; 
                 p_screen.x *= iResolution.x / iResolution.y; 
 
                 vec3 camAng = vec3(0.0, -0.1, 0.0); 
@@ -1195,6 +1271,11 @@
 
                 if (distToHit >= 1000.0 - EPSILON) { 
                     color = getSkyColor(rayDir);
+                    
+                    vec4 bird_color = renderBirds(p_screen);
+                    if (bird_color.a > 0.5) {
+                        color = bird_color.rgb;
+                    }
                 } else {
                     vec3 normal = getNormal(hitPos, EPSILON * distToHit * 0.1); 
                     color = getSeaColor(hitPos, normal, lightDir, rayDir, hitPos - camPos);
