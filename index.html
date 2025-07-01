@@ -29,6 +29,8 @@
     
     <title>Orcas Audio - tailored sonic processing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- WaveSurfer.js -->
+    <script src="https://unpkg.com/wavesurfer.js"></script>
     <style>
         @font-face {
             font-family: 'CustomTypeface';
@@ -84,10 +86,10 @@
     text-shadow:
         0 2px 12px rgba(0, 100, 0, 0.3),   /* Soft black glow */
         0 4px 17px rgba(255, 255, 255, 0.3);   /* Additional soft black glow */
-     /* Add this line for the white border */
-    display: inline-block;     /* Add this line so the border fits the text */
-    padding: 10px 20px;         /* Optional: adds space between text and border */
-    box-sizing: border-box;   /* Ensures padding doesn't push out the border */
+    /* Add this line for the white border */
+    display: inline-block;   /* Add this line so the border fits the text */
+    padding: 10px 20px;       /* Optional: adds space between text and border */
+    box-sizing: border-box;  /* Ensures padding doesn't push out the border */
 }
 
         .header {
@@ -118,7 +120,7 @@
     font-family: 'CustomTypeface', 'Inter', sans-serif;
     font-size: 3em;           /* Increased size */
     font-weight: 400;
-    color: #000;               /* Black text */
+    color: #000;              /* Black text */
     margin-bottom: 20px;
     font-style: italic;       /* This makes the text italic */
 text-shadow:
@@ -133,9 +135,12 @@ text-shadow:
             align-items: flex-start;
         }
 
-        .plugin-image {
+        .plugin-image-container {
             flex: 0 0 400px;
             max-width: 400px;
+        }
+
+        .plugin-image {
             cursor: pointer; /* Add cursor pointer to indicate it's clickable */
         }
 
@@ -158,7 +163,7 @@ text-shadow:
     font-size: 1.81em;
     line-height: 1.0;
     margin-bottom: 20px;
-        font-style: italic;       /* This makes the text italic */
+    font-style: italic;       /* This makes the text italic */
 
     color: #000; /* Darker blue base */
       text-shadow:
@@ -253,7 +258,7 @@ text-shadow:
         }
 
         .orca-shadow {
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+   filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
 }
         /* --- Cursor Particle Effect --- */
         .particle {
@@ -311,7 +316,7 @@ text-shadow:
         }
 
         .coming-soon {
-  color: white;
+   color: white;
 }
 
         /* --- Footer --- */
@@ -324,6 +329,118 @@ text-shadow:
             color: #ccc;
             font-size: 1.2em;
         }
+
+        /* --- Wavesurfer Styles --- */
+        .audio-player-container {
+            margin-top: 20px;
+        }
+
+        .waveform-container {
+            width: 100%;
+            height: 80px; /* Adjust height as needed */
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Changed to left-justify */
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .play-pause-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(140, 184, 211, 0.25); /* Bluish tint */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .play-pause-btn:hover {
+            background: rgba(140, 184, 211, 0.45);
+        }
+        
+        .play-pause-btn .icon {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+
+        /* Play Icon (Triangle) */
+        .play-pause-btn .icon.play {
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 14px solid #fff;
+            margin-left: 4px; /* Center the triangle */
+        }
+
+        /* Pause Icon (Two Bars) */
+        .play-pause-btn .icon.pause::before,
+        .play-pause-btn .icon.pause::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 16px;
+            background-color: #fff;
+            border-radius: 2px;
+        }
+
+        .play-pause-btn .icon.pause::before {
+            left: 4px;
+        }
+
+        .play-pause-btn .icon.pause::after {
+            right: 4px;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;
+            height: 5px;
+            background: #555;
+            outline: none;
+            border-radius: 3px;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+
+        .volume-slider:hover {
+            opacity: 1;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #8cb8d3;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            background: #8cb8d3;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
@@ -346,7 +463,7 @@ text-shadow:
                 gap: 20px;
             }
 
-            .plugin-image {
+            .plugin-image-container {
                 flex: none;
                 max-width: 100%;
             }
@@ -420,7 +537,7 @@ text-shadow:
     (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
     ml('account', '1591339');
 </script>
-      <style>
+    <style>
     #maiqqi {
       pointer-events: none;
       cursor: not-allowed;
@@ -445,7 +562,7 @@ text-shadow:
         <div style="display: flex; ">
             
     <h1 class="title" style="margin:0; padding:0;">Orcas Audio</h1>
-          <img src="orca1_reverse.png" alt="Orca" style="height: 80px; transform: translateY(25px);" class="orca-shadow">
+          <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/orca1_reverse.png" alt="Orca" style="height: 80px; transform: translateY(25px);" class="orca-shadow">
             
         </div>
 
@@ -453,24 +570,33 @@ text-shadow:
         
             
         <h2 class="header">tailored sonic processing</h2>
-           <div class="info-section-container">
-            <div class="info-section">
-            
-                <p class="info-text">
-                  We build plugins that cater to our favored sonic characteristics as musicians, producers and audio engineers. Our products are made to introduce character and flavor to otherwise sterile audio. Our focuses are reverb, delay and tempo-sync time variables for rhythmic glue.<br>
-                    Please enjoy 1 of our 3 flagship effects, "Whirlpool", available now for free/pay what you want. Check out our other 2 effects, Undertow and Quad Cascade. <br>
-                    Don't forget to check in as we continue to develop more effects!
-                </p>
-            </div>
+              <div class="info-section-container">
+                <div class="info-section">
+                
+                    <p class="info-text">
+                        We build plugins that cater to our favored sonic characteristics as musicians, producers and audio engineers. Our products are made to introduce character and flavor to otherwise sterile audio. Our focuses are reverb, delay and tempo-sync time variables for rhythmic glue.<br>
+                        Please enjoy 1 of our 3 flagship effects, "Whirlpool", available now for free/pay what you want. Check out our other 2 effects, Undertow and Quad Cascade. <br>
+                        Don't forget to check in as we continue to develop more effects!
+                    </p>
+                </div>
 
         <div class="section-divider">//==============================================================================</div>
         
         <div class="plugin-section">
             <h3 class="plugin-title">Whirlpool</h3>
             <div class="plugin-content">
-                <div class="plugin-image">
-                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/whirlpoolVST.png" 
-                         alt="Whirlpool VST Plugin Interface">
+                <div class="plugin-image-container">
+                    <div class="plugin-image">
+                        <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/whirlpoolVST.png" 
+                             alt="Whirlpool VST Plugin Interface">
+                    </div>
+                    <div class="audio-player-container">
+                        <div class="waveform-container" id="waveform-whirlpool"></div>
+                        <div class="controls">
+                            <button class="play-pause-btn" data-wavesurfer-id="whirlpool"><div class="icon play"></div></button>
+                            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" data-wavesurfer-id="whirlpool">
+                        </div>
+                    </div>
                 </div>
                 <div class="plugin-info">
                     <p class="plugin-description">
@@ -494,9 +620,18 @@ text-shadow:
         <div class="plugin-section">
             <h3 class="plugin-title">Undertow</h3>
             <div class="plugin-content">
-                <div class="plugin-image">
-                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/undertowVST.png" 
-                         alt="Undertow VST Plugin Interface">
+                <div class="plugin-image-container">
+                    <div class="plugin-image">
+                        <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/undertowVST.png" 
+                             alt="Undertow VST Plugin Interface">
+                    </div>
+                     <div class="audio-player-container">
+                        <div class="waveform-container" id="waveform-undertow"></div>
+                        <div class="controls">
+                            <button class="play-pause-btn" data-wavesurfer-id="undertow"><div class="icon play"></div></button>
+                            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" data-wavesurfer-id="undertow">
+                        </div>
+                    </div>
                 </div>
                 <div class="plugin-info">
                     <p class="plugin-description">
@@ -521,9 +656,18 @@ text-shadow:
         <div class="plugin-section">
             <h3 class="plugin-title">Quad Cascade</h3>
             <div class="plugin-content">
-                <div class="plugin-image">
-                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/quadCascade.png" 
-                         alt="Quad Cascade VST Plugin Interface">
+                <div class="plugin-image-container">
+                    <div class="plugin-image">
+                        <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/quadCascade.png" 
+                             alt="Quad Cascade VST Plugin Interface">
+                    </div>
+                     <div class="audio-player-container">
+                        <div class="waveform-container" id="waveform-quadcascade"></div>
+                        <div class="controls">
+                            <button class="play-pause-btn" data-wavesurfer-id="quadcascade"><div class="icon play"></div></button>
+                            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" data-wavesurfer-id="quadcascade">
+                        </div>
+                    </div>
                 </div>
                 <div class="plugin-info">
                     <p class="plugin-description">
@@ -539,7 +683,7 @@ text-shadow:
                         <li>Level trim control for optimal output management</li>
                         <li>Compatible with All Major DAWs in VST3 format</li>
                     </ul>
-                   
+                    
                     <a href="https://orcasaudio.sellfy.store/p/quad-cascade/" data-text="" id="oygcvu" class="sellfy-buy-button"></a>
 <script src="https://sellfy.com/js/api_buttons.js"></script>
                 </div>
@@ -548,18 +692,27 @@ text-shadow:
         <div class="section-divider">//==============================================================================</div>
 
          <div class="plugin-section">
-            <h3 class="plugin-title">Monsoon Drive        <span class="coming-soon"> (coming soon)</span>
+            <h3 class="plugin-title">Monsoon Drive       <span class="coming-soon"> (coming soon)</span>
 </h3></h3>
             <div class="plugin-content">
-                <div class="plugin-image">
-                    <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/HarmBass.png" 
-                         alt="HarmBass VST Plugin Interface">
+                <div class="plugin-image-container">
+                    <div class="plugin-image">
+                        <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/HarmBass.png" 
+                             alt="HarmBass VST Plugin Interface">
+                    </div>
+                     <div class="audio-player-container">
+                        <div class="waveform-container" id="waveform-monsoondrive"></div>
+                        <div class="controls">
+                            <button class="play-pause-btn" data-wavesurfer-id="monsoondrive"><div class="icon play"></div></button>
+                            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" data-wavesurfer-id="monsoondrive">
+                        </div>
+                    </div>
                 </div>
                 <div class="plugin-info">
                     <p class="plugin-description">
-                       Transform your low end with this powerful bass harmonic saturator featuring a collection of character EQ types 
+                        Transform your low end with this powerful bass harmonic saturator featuring a collection of character EQ types 
                         and variable modeled saturation types. Analog flavored soft-clipper for harmonic enhancement and amplitude regulation.
-                         Dedicated bass frequency control for targeted saturation.
+                         Dedicated bass frequency control for targeted saturation.
                     </p>
                     <ul class="plugin-features">
                         <li>Four distortion algorithms modeled after hardware circutry and signal processing</li>
@@ -574,23 +727,23 @@ text-shadow:
 
   </body>
                 
-                    
+                
                 </div>
             </div>
         </div>
 
-   
+    
         <!-- === INFO CONTENT STARTS HERE === -->
         <div class="section-divider" style="color: #000;">//==============================================================================</div>
         <div class="info-section-container">
             <div class="info-section">
                 <h3 class="info-title">Lifetime Updates</h3>
                 <p class="info-text">
-                   With our products, a one-time purchase automatically enrolls you for access to all updates for that product forever. 
+                    With our products, a one-time purchase automatically enrolls you for access to all updates for that product forever. 
                 </p>
             </div>
         
-        <img src="orca1.png" alt="Orca" style="height: 100px;" class="orca-shadow">
+        <img src="https://raw.githubusercontent.com/tkomforty/orcaSite/main/orca1.png" alt="Orca" style="height: 100px;" class="orca-shadow">
     
         <div class="info-section-container">
             <div class="info-section">
@@ -663,7 +816,7 @@ text-shadow:
         const MAX_SPLASHES = 10;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
         // --- Particle Effect Logic ---
         let canSpawnParticle = true;
@@ -856,6 +1009,9 @@ text-shadow:
 
 
             animate();
+            
+            // --- Wavesurfer Initialization ---
+            setupWaveforms();
 
             setTimeout(function() {
                 resize();
@@ -1063,6 +1219,110 @@ text-shadow:
             }
             return shaderProgram;
         }
+        
+        // --- Wavesurfer Logic ---
+        function setupWaveforms() {
+            const wavesurferInstances = {};
+
+            const audioSamples = [
+                { id: 'whirlpool', url: 'https://raw.githubusercontent.com/tkomforty/orcaSite/main/WhirlpoolSamples_mastered.mp3' },
+                { id: 'undertow', url: 'https://raw.githubusercontent.com/tkomforty/orcaSite/main/UndertowSamples_mix.mp3' },
+                { id: 'quadcascade', url: 'https://raw.githubusercontent.com/tkomforty/orcaSite/main/QuadCascadeSamples_mix.mp3' },
+                { id: 'monsoondrive', url: 'https://wavesurfer.xyz/wavesurfer-code/examples/audio/stereo.mp3' }
+            ];
+
+            audioSamples.forEach(sample => {
+                const wavesurfer = WaveSurfer.create({
+                    container: `#waveform-${sample.id}`,
+                    waveColor: '#8cb8d3',
+                    progressColor: '#333',
+                    backend: 'MediaElement',
+                    height: 80,
+                    barWidth: 2,
+                    barGap: 1,
+                    barRadius: 2,
+                    cursorWidth: 0,
+                    interact: true,
+                    hideScrollbar: true,
+                    normalize: true,
+                    responsive: true,
+                    backgroundColor: 'transparent'
+                });
+                
+                try {
+                    wavesurfer.load(sample.url);
+                } catch (error) {
+                    console.error(`Wavesurfer error loading URL ${sample.url}:`, error);
+                    const container = document.querySelector(`#waveform-${sample.id}`);
+                    if (container) {
+                        container.innerHTML = '<p style="color: #ccc; text-align: center; padding-top: 20px;">Could not load audio sample.</p>';
+                    }
+                }
+
+
+                wavesurferInstances[sample.id] = wavesurfer;
+
+                // Handle waveform clicks to play/pause
+                wavesurfer.on('waveform-ready', () => {
+                     document.querySelector(`#waveform-${sample.id}`).addEventListener('click', () => {
+                        wavesurfer.playPause();
+                    });
+                });
+                
+                wavesurfer.on('error', (e) => {
+                    console.error(`Wavesurfer error for ${sample.id}: ${e}`);
+                    const container = document.querySelector(`#waveform-${sample.id}`);
+                    if (container) {
+                        container.innerHTML = '<p style="color: #ccc; text-align: center; padding-top: 20px;">Error: Could not load audio.</p>';
+                    }
+                });
+
+                // Update play/pause button icon
+                const buttonIcon = document.querySelector(`.play-pause-btn[data-wavesurfer-id="${sample.id}"] .icon`);
+
+                wavesurfer.on('play', () => {
+                    if (buttonIcon) {
+                        buttonIcon.classList.remove('play');
+                        buttonIcon.classList.add('pause');
+                    }
+                });
+
+                wavesurfer.on('pause', () => {
+                    if (buttonIcon) {
+                        buttonIcon.classList.remove('pause');
+                        buttonIcon.classList.add('play');
+                    }
+                });
+
+                wavesurfer.on('finish', () => {
+                    if (buttonIcon) {
+                        buttonIcon.classList.remove('pause');
+                        buttonIcon.classList.add('play');
+                    }
+                });
+            });
+
+            // Add event listeners for play/pause buttons
+            document.querySelectorAll('.play-pause-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.getAttribute('data-wavesurfer-id');
+                    if (wavesurferInstances[id]) {
+                        wavesurferInstances[id].playPause();
+                    }
+                });
+            });
+
+            // Add event listeners for volume sliders
+            document.querySelectorAll('.volume-slider').forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    const id = slider.getAttribute('data-wavesurfer-id');
+                    if (wavesurferInstances[id]) {
+                        wavesurferInstances[id].setVolume(e.target.value);
+                    }
+                });
+            });
+        }
+
 
         const vertexShader = `
             attribute vec2 aPosition;
@@ -1221,7 +1481,7 @@ text-shadow:
                 float sunGlowFactor = pow(max(dot(normalizedEyeDir, sunDirection), 0.0), 8.0);  
 
                 sky += vec3(1.0, 0.85, 0.9) * sunIntensityFactor * 0.45; 
-                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;    
+                sky += vec3(0.95, 0.8, 0.9) * sunGlowFactor * 0.15;   
                 
                 sky *= 0.8; 
 
